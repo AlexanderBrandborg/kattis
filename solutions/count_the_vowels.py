@@ -1,3 +1,4 @@
+# Difficulty: 1.2
 def main():
     vowels = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U']
     counter = 0
