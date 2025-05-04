@@ -1,6 +1,6 @@
 # Difficulty: 2.0
+# Url: https://open.kattis.com/problems/set
 class Card:
-
     def __init__(self, index, str):
         self.index = index
         self.number = int(str[0])
@@ -18,49 +18,48 @@ class CardSet:
         self.card3 = card3
     
     def is_valid(self):
+        # If set is 1, then all cards must have the same value
+        # If set is 3, then all cards must have different values and thus be pairwise different
+
         num_set = set([self.card1.number, self.card2.number, self.card3.number])
         shape_set = set([self.card1.shape, self.card2.shape, self.card3.shape])
         pattern_set = set([self.card1.pattern, self.card2.pattern, self.card3.pattern])
         colour_set = set([self.card1.colour, self.card2.colour, self.card3.colour])
 
-        res = len(num_set) != 2 and len(shape_set) != 2 and len(pattern_set) != 2 and len(colour_set) != 2
-        return res
+        return len(num_set) != 2 and len(shape_set) != 2 and len(pattern_set) != 2 and len(colour_set) != 2
 
     def __str__(self):
         return str(self.card1) + " " + str(self.card2) + " " + str(self.card3)            
 
-def recursive_walk(cards, active_set):
+def generate_all_sets(cards, active_set):
     if len(active_set) == 3:
-        return CardSet(active_set[0], active_set[1], active_set[2])
-    l = []
-
-    for i in range(len(cards)):
-        result = recursive_walk(cards[i+1:], active_set + [cards[i]])
-        if isinstance(result, CardSet):
-            l.append(result)
-        else:
-            l.extend(result)
-    return l
+        # wrap in list, to ensure we always return lists from this recursive function
+        return [CardSet(active_set[0], active_set[1], active_set[2])] 
+    
+    available_cards = cards[:]
+    results = []
+    for card in cards:
+        available_cards.remove(card) # ensures that a card can only appear in a set once
+        res = generate_all_sets(available_cards, active_set + [card])
+        results.extend(res)
+    return results
 
 def main():
     cards = []
+
     for i in range(4):
         string = input().split(" ")
-        for j in range(3): 
-            cards.append(Card(((i * 3) + j + 1), string[j]))
+        for j in range(3):
+            card_index = (i * 3) + j + 1
+            cards.append(Card(card_index, string[j]))
 
-    all_sets = recursive_walk(cards, [])
-
-    result = []
-    for card_set in all_sets:
-        if(card_set.is_valid()):
-            result.append(card_set)
+    possible_sets = generate_all_sets(cards, [])
+    valid_sets = [card_set for card_set in possible_sets if card_set.is_valid()]
     
-    #result.sort()
-    if not result:
+    if not valid_sets:
         print("no sets")
     else:
-        for s in result:
+        for s in valid_sets:
             print(s)
 
 if __name__=="__main__":

@@ -1,4 +1,5 @@
 # Difficulty: 1.3
+# Url: https://open.kattis.com/problems/grassseed
 def main():
     cost = float(input())
     num_lawns = int(input())
